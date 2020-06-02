@@ -4,17 +4,10 @@ const express = require('express');
 const app = express();
 // 포트번호 지정
 const port = 5000;
-
-// mongoose 연결
-const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://root:java@boilerplate-2lwj3.mongodb.net/test?retryWrites=true&w=majority', {
-    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
-}).then(() => console.log('mongoose connent!'))
-.catch(err => console.log(err));
-
 // body-parser
 const bodyParser = require('body-parser');
-
+// mongo uri를 암호화하여 사용하기 위한 config
+const config = require('./config/key');
 // user model 가져오기
 const { User } = require("./models/User");
 
@@ -24,24 +17,39 @@ app.use(bodyParser.urlencoded({extended: true}));
 // application/json 형태를 분석해서 가져옴
 app.use(bodyParser.json());
 
+// mongoose 연결
+const mongoose = require('mongoose');
+mongoose.connect(config.mongoURI, {
+    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
+}).then(() => console.log('mongoose connent!'))
+.catch(err => console.log(err));
+
+
+
+
+
+
+
 // Root
 app.get('/', (req, res) => res.send('Hello World!'));
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
 
 // Register Router
-app.post('/register', (req, res) => {
+app.post('/signup', (req, res) => {
 
     // 회원가입 할 때 필요한 정보들을 Client에서 가져오면 
     // 그것들을 데이터베이스에 넣어준다. -> user Model을 가져와야 한다.
 
     // req.body안에는 body-parser 덕분에 user의 json형식으로 정보가 저장되어 있다.
-    const user = new User(req.body)
+    const user = new User(req.body);
     
     // mongo DB에 저장하기
     user.save((err, userInfo) => {
-        if (err) return res.json({success: false, err})
+        if (err) {
+            return res.json({success: false, err})
+        }
         return res.status(200).json({
             success: true
-        })
-    })
+        });
+    });
 });
