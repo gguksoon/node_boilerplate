@@ -39,7 +39,7 @@ mongoose.connect(config.mongoURI, {
 
 // root router
 app.get('/', (req, res) => res.send('Hello World!'));
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port} !! ${process.env.NODE_ENV}`));
 
 // signup router
 app.post('/api/users/signup', (req, res) => {
