@@ -35,7 +35,7 @@ mongoose.connect(config.mongoURI, {
 
 
 
-
+app.get('/api/hello', (req, res) => res.send('Hello~'));
 
 // root router
 app.get('/', (req, res) => res.send('Hello World!'));
@@ -73,7 +73,7 @@ app.post('/api/users/signin', (req, res) => {
         // 요청된 이메일이 없다면
         if(!user) {
             return res.json({
-                loginSuccess: false,
+                signinSuccess: false,
                 message: "제공된 이메일에 해당하는 유저가 없습니다."
             })
         }
@@ -81,7 +81,7 @@ app.post('/api/users/signin', (req, res) => {
         // 이메일이 있다면
         user.comparePassword(req.body.password, (err, isMatch) => {
             if(!isMatch) {
-                return res.json({ loginSuccess: false, message: "비밀번호가 틀렸습니다."});
+                return res.json({ signinSuccess: false, message: "비밀번호가 틀렸습니다."});
             }
             // 비밀번호가 맞다면 토큰 생성
             user.generateToken((err, user) => {
@@ -89,8 +89,8 @@ app.post('/api/users/signin', (req, res) => {
                 if(err) return res.status(400).send(err);
 
                 // 토큰을 쿠키에 저장한다. (로컬스토리지, 세션 등도 가능)
-                res.cookie("x_auth", user.token)``
-                .status(200).json({loginSuccess: true, userId: user._id})
+                res.cookie("x_auth", user.token) 
+                .status(200).json({signinSuccess: true, userId: user._id})
             });
         });
     });
